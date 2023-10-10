@@ -4,7 +4,7 @@ import "./App.css";
 import { auth } from "./firebase.js";
 
 import Login from "./pages/Login.js";
-import Explore from "./pages/Explore.js";
+import Explore from "./pages/Explore/Explore.js";
 import Search from "./pages/Search.js";
 import Create from "./pages/Create.js";
 import Profile from "./pages/Profile.js";
@@ -25,8 +25,8 @@ const App = (props) => {
     username,
     setUsername,
     isLoggedIn,
-    setIsLoggedIn
-  }
+    setIsLoggedIn,
+  };
 
   // that empty [] at the end is the condition for the useEffect to run - useEffect only runs when the stuff in the brackets changes. if nothing is in the brackets, it only runs once on startup, making the whole useEffect block equal to a componentDidMount
   useEffect(() => {
@@ -49,34 +49,30 @@ const App = (props) => {
   return (
     <UserContext.Provider value={infoToPass}>
       <Routes>
-          <Route
-          path="/"
-          element={<Login />}
-          errorElement={<ErrorPage />}
-          />
-          <Route
+        <Route path="/" element={<Login />} errorElement={<ErrorPage />} />
+        <Route
           path="/Explore"
           element={<Explore />}
           errorElement={<ErrorPage />}
-          />
-          <Route
+        />
+        <Route
           path="/Search"
           element={<Search />}
           errorElement={<ErrorPage />}
-          />
-          <Route
+        />
+        <Route
           path="/Create"
           element={<Create />}
           errorElement={<ErrorPage />}
-          />
-          <Route
+        />
+        <Route
           path="/Profile"
           element={<Profile />}
           errorElement={<ErrorPage />}
-          />
+        />
       </Routes>
     </UserContext.Provider>
-  )
-}
+  );
+};
 
 export default App;
