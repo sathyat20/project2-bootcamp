@@ -27,6 +27,7 @@ export default function Explore() {
   /////////// DECALRE STATES HERE ///////////
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: process.env.REACT_APP_GOOGLE_API_KEY,
+    libraries: ["places"],
   });
 
   return (
