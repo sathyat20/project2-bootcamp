@@ -1,0 +1,8 @@
+.max-w-md {
+  max-width: 50rem !important;
+}
+
+.top-card-container {
+  display: flex;
+  justify-content: center;
+}

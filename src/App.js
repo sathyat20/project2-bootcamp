@@ -9,6 +9,7 @@ import Search from "./pages/Search.js";
 import Create from "./pages/Create.js";
 import Profile from "./pages/Profile.js";
 import ErrorPage from "./pages/ErrorPage.js";
+import TripProvider from "./Provider/TripProvider";
 
 import { onAuthStateChanged } from "firebase/auth";
 
@@ -47,31 +48,33 @@ const App = (props) => {
   }, []);
 
   return (
-    <UserContext.Provider value={infoToPass}>
-      <Routes>
-        <Route path="/" element={<Login />} errorElement={<ErrorPage />} />
-        <Route
-          path="/Explore"
-          element={<Explore />}
-          errorElement={<ErrorPage />}
-        />
-        <Route
-          path="/Search"
-          element={<Search />}
-          errorElement={<ErrorPage />}
-        />
-        <Route
-          path="/Create"
-          element={<Create />}
-          errorElement={<ErrorPage />}
-        />
-        <Route
-          path="/Profile"
-          element={<Profile />}
-          errorElement={<ErrorPage />}
-        />
-      </Routes>
-    </UserContext.Provider>
+    <TripProvider>
+      <UserContext.Provider value={infoToPass}>
+        <Routes>
+          <Route path="/" element={<Login />} errorElement={<ErrorPage />} />
+          <Route
+            path="/Explore"
+            element={<Explore />}
+            errorElement={<ErrorPage />}
+          />
+          <Route
+            path="/Search"
+            element={<Search />}
+            errorElement={<ErrorPage />}
+          />
+          <Route
+            path="/Create"
+            element={<Create />}
+            errorElement={<ErrorPage />}
+          />
+          <Route
+            path="/Profile"
+            element={<Profile />}
+            errorElement={<ErrorPage />}
+          />
+        </Routes>
+      </UserContext.Provider>
+    </TripProvider>
   );
 };
 

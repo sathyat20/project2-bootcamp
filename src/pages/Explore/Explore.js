@@ -4,8 +4,10 @@ import Header from "../../components/header.js";
 import Footer from "../../components/footer.js";
 // import { UserContext } from "../App.js";
 // import mapStyles from "../components/mapStyles";
-import { GoogleMap, useLoadScript, Marker } from "@react-google-maps/api";
 import "./explore.css";
+import { GoogleMap, useLoadScript, Marker } from "@react-google-maps/api";
+
+// import { FaLocationArrow, FaTimes } from "react-icons/fa";
 
 /////////// DECALRE FIREBASE LIST NAME HERE ///////////
 /////////// e.g. const DB_POSTS_KEY = "posts"; ///////////
@@ -17,6 +19,7 @@ export default function Explore() {
   /////////// DECALRE STATES HERE ///////////
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: process.env.REACT_APP_GOOGLE_API_KEY,
+    libraries: ["places"],
   });
 
   return (
