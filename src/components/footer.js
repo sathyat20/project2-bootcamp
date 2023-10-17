@@ -6,7 +6,7 @@ const Footer = (props) => {
       <NavLink 
         to="/Explore" 
         className="text-2xl">
-            <i class="fi fi-rr-marker"></i>
+            <i className="fi fi-rr-marker"></i>
       </NavLink>
       <NavLink 
         to="/Search" 
