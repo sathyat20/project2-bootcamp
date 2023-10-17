@@ -18,6 +18,7 @@ const App = (props) => {
   const [user, setUser] = useState({});
   const [username, setUsername] = useState("");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [selectedCenter, setSelectedCenter] = useState({});
 
   const infoToPass = {
     user,
@@ -26,6 +27,8 @@ const App = (props) => {
     setUsername,
     isLoggedIn,
     setIsLoggedIn,
+    selectedCenter,
+    setSelectedCenter,
   };
 
   // that empty [] at the end is the condition for the useEffect to run - useEffect only runs when the stuff in the brackets changes. if nothing is in the brackets, it only runs once on startup, making the whole useEffect block equal to a componentDidMount
