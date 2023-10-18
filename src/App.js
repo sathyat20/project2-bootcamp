@@ -49,10 +49,10 @@ const App = (props) => {
   }, []);
 
   return (
-    <TripProvider>
+    <UserContext.Provider value={infoToPass}>
+      <TripProvider>
       <CoordinatesProvider>
-        <UserContext.Provider value={infoToPass}>
-          <Routes>
+            <Routes>
             <Route path="/" element={<Login />} errorElement={<ErrorPage />} />
             <Route
               path="/Explore"
@@ -75,9 +75,9 @@ const App = (props) => {
               errorElement={<ErrorPage />}
             />
           </Routes>
-        </UserContext.Provider>
+      </TripProvider>
+      </UserContext.Provider>
       </CoordinatesProvider>
-    </TripProvider>
   );
 };
 

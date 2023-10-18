@@ -56,9 +56,9 @@ export default function CurrentTrip() {
   return (
     <div>
       <div>
-        {trip ? (
+        {trip && trip.isTripCreated ? (
           <div>
-            <h1>{trip.title}</h1>
+            {trip.title && <h1>{trip.title}</h1>}
             {trip.date ? (
               <div>
                 <h1>Start Date: {trip.date.startDate}</h1>
@@ -69,7 +69,6 @@ export default function CurrentTrip() {
         ) : null}
       </div>
 
-      <h2>Uncategorized</h2>
       <div className="top-card-container">
         <div className="card lg:card-side bg-base-100 shadow-xl max-w-md">
           <figure>

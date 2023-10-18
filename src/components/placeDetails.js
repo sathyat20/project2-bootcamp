@@ -1,5 +1,7 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useContext } from "react";
 import { UserContext } from "../App";
+import { useNavigate } from "react-router-dom";
+import { TripContext } from "../Provider/TripProvider.js";
 
 const PlaceDetails = ({
   hiddenGemId,
@@ -17,6 +19,10 @@ const PlaceDetails = ({
   onButtonChange,
 }) => {
   const { user } = useContext(UserContext);
+  const { setShowPastTrips, setShowNewTrip, setActiveButton } =
+    useContext(TripContext);
+
+  const navigate = useNavigate();
 
   const calculateCount = (correspondObject) => {
     let count = 0;
@@ -40,6 +46,20 @@ const PlaceDetails = ({
     } else {
       return false;
     }
+  };
+
+  const onPastTripsClick = () => {
+    setShowNewTrip(false);
+    setShowPastTrips(true);
+    setActiveButton(3);
+    navigate("/Create");
+  };
+
+  const onNewTripsClick = () => {
+    setShowNewTrip(true);
+    setShowPastTrips(false);
+    setActiveButton(1);
+    navigate("/Create");
   };
 
   const userSelfVisit = () => {
@@ -75,7 +95,11 @@ const PlaceDetails = ({
             <div className="flex flex-col justify-between  text-left content-center gap-1">
               <h1 className="font-bold text-xl">{name}</h1>
               <h4>Rating: {rating}</h4>
-              {editorial_summary ? <p className="text-xs">{editorial_summary.overview}</p> : ""}
+              {editorial_summary ? (
+                <p className="text-xs">{editorial_summary.overview}</p>
+              ) : (
+                ""
+              )}
             </div>
             <div>
               <h1>Photo</h1>
@@ -86,11 +110,7 @@ const PlaceDetails = ({
             <div className="flex justify-between text-center content-center">
               {/* Like Button */}
               {userSelfLike() ? (
-                <form
-                  name="true"
-                  id="like"
-                  onSubmit={(e) => onButtonChange(e)}
-                >
+                <form name="true" id="like" onSubmit={(e) => onButtonChange(e)}>
                   <button
                     type="submit"
                     className="btn-sm btn-ghost text-xl pl-0 pr-2"
@@ -135,10 +155,7 @@ const PlaceDetails = ({
                   id="visit"
                   onSubmit={(e) => onButtonChange(e)}
                 >
-                  <button
-                    type="submit"
-                    className="btn-sm btn-ghost text-xl"
-                  >
+                  <button type="submit" className="btn-sm btn-ghost text-xl">
                     <i className="fi fi-sr-check-circle"></i>
                   </button>
                 </form>
@@ -148,10 +165,7 @@ const PlaceDetails = ({
                   id="visit"
                   onSubmit={(e) => onButtonChange(e)}
                 >
-                  <button
-                    type="submit"
-                    className="btn-sm btn-ghost text-xl"
-                  >
+                  <button type="submit" className="btn-sm btn-ghost text-xl">
                     <i className="fi fi-rr-check-circle"></i>
                   </button>
                 </form>
@@ -159,11 +173,7 @@ const PlaceDetails = ({
             </div>
             {/* Save Button */}
             {userSelfSave() ? (
-              <form
-                name="true"
-                id="save"
-                onSubmit={(e) => onButtonChange(e)}
-              >
+              <form name="true" id="save" onSubmit={(e) => onButtonChange(e)}>
                 <button
                   type="submit"
                   className="btn-sm btn-ghost text-xl pl-2 pr-0"
@@ -172,11 +182,7 @@ const PlaceDetails = ({
                 </button>
               </form>
             ) : (
-              <form
-                name="false"
-                id="save"
-                onSubmit={(e) => onButtonChange(e)}
-              >
+              <form name="false" id="save" onSubmit={(e) => onButtonChange(e)}>
                 <button
                   type="submit"
                   className="btn-sm btn-ghost text-xl pl-2 pr-0"
@@ -188,46 +194,48 @@ const PlaceDetails = ({
           </div>
           {/* Like & Visited Count Row */}
           <p className="text-left text-xs font-bold">
-            {calculateCount(likes) > 0 ? (
-              `${calculateCount(likes)} likes`
-            ) : (
-              ""
-            )}{" "}
-            {calculateCount(visits) > 0 ? (
-              ` ${calculateCount(visits)} visited`
-            ) : (
-              ""
-            )}
+            {calculateCount(likes) > 0 ? `${calculateCount(likes)} likes` : ""}{" "}
+            {calculateCount(visits) > 0
+              ? ` ${calculateCount(visits)} visited`
+              : ""}
           </p>
           {/* Carousell */}
           <div className="carousel carousel-center max-w-md space-x-2 h-auto bg-white rounded-box">
-              <div className="carousel-item">
-                <button
-                  name="createNewTrip"
-                  className="rounded-box bg-slate-200 h-16 "
-                  onClick={() => {}}
-                >
-                  <div className="flex p-4 justify-center text-center content-center gap-2">
-                    <i className="fi fi-rr-plus content-center"></i>
-                    <p className="font-bold">Create A Trip ?</p>
-                  </div>
-                </button>
-              </div>
-              <div className="carousel-item">
-                <button
-                  name="addToExistingTrip"
-                  className="rounded-box bg-slate-200 h-16"
-                  onClick={() => {}}
-                >
-                  <div className="flex flex-col p-4 justify-center text-left content-center">
-                    <p className="font-bold">View Created Trips</p>
-                  </div>
-                </button>
-              </div>
+            <div className="carousel-item">
+              <button
+                name="createNewTrip"
+                className="rounded-box bg-slate-200 h-16 "
+                onClick={() => {
+                  onNewTripsClick();
+                }}
+              >
+                <div className="flex p-4 justify-center text-center content-center gap-2">
+                  <i className="fi fi-rr-plus content-center"></i>
+                  <p className="font-bold">Create A Trip ?</p>
+                </div>
+              </button>
+            </div>
+            <div className="carousel-item">
+              <button
+                name="addToExistingTrip"
+                className="rounded-box bg-slate-200 h-16"
+                onClick={() => {
+                  onPastTripsClick();
+                }}
+              >
+                <div className="flex flex-col p-4 justify-center text-left content-center">
+                  <p className="font-bold">View Created Trips</p>
+                </div>
+              </button>
+            </div>
           </div>
         </div>
       </div>
-      <form method="dialog" className="modal-backdrop" onSubmit={() => clearState()}>
+      <form
+        method="dialog"
+        className="modal-backdrop"
+        onSubmit={() => clearState()}
+      >
         <button type="submit">close</button>
       </form>
     </dialog>
