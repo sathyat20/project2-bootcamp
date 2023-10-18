@@ -4,6 +4,7 @@ import Header from "../../components/header.js";
 import Footer from "../../components/footer.js";
 import { database } from "../../firebase.js";
 import { UserContext } from "../../App.js";
+import { CoordinatesContext } from "../../Provider/CoordinatesProvider";
 import PlaceDetails from "../../components/placeDetails.js";
 import PlaceComments from "../../components/placeComments.js";
 import { GoogleMap, useLoadScript, Marker, MarkerClusterer } from "@react-google-maps/api";
@@ -46,7 +47,8 @@ export default function Explore() {
 
 function Map() {
   // User Object brought in via useContext();
-  const { user, selectedCenter } = useContext(UserContext);
+  const { user } = useContext(UserContext);
+  const { districtDetails, setDistrictDetails } = useContext(CoordinatesContext);
 
   // Places Data
   const [ hiddenGem, setHiddenGem ] = useState({});
@@ -62,7 +64,7 @@ function Map() {
   // Maps Data
   const [ center, setCenter ] = useState({ lat: 22.396427, lng: 114.109497 });
   const [ map, setMap ] = useState(null);
-  const [ zoom, setZoom ] = useState(null);
+  const [ zoom, setZoom ] = useState(9.8);
   // For handleZoomChanged
   const mapRef = React.createRef();
   // For transition
@@ -330,10 +332,6 @@ function Map() {
     
     onChildAdded(dbRefForHiddenGem, (data) => {
       setHiddenGem(hiddengem => {
-        // return [
-        //   ...hiddengem,
-        //   { key: data.key, ...data.val() }
-        // ]
         return {
           ...hiddengem,
           [data.key]: {...data.val()},
@@ -349,14 +347,23 @@ function Map() {
         }
       });
     });
+
   }, []);
 
   // When map and center is updated, triggers "map.setCenter()".
   useEffect(() => {
     if (map) {
-      map.setCenter(center);
+      console.log("Map being set");
+      if (districtDetails !== undefined ) {
+        if (Object.keys(districtDetails).length > 0) {
+          setCenter(districtDetails.coordinates);
+          setZoom(districtDetails.zoom);
+          console.log("DistrictDetails validated and successfully set");
+          setDistrictDetails({});
+        }
+      }
     }
-  }, [map, center])
+  }, [map])
 
   // When hiddenGemId is updated, triggers either "cardRenderMain()" to place the "<PlaceDetails/>" into return().
   useEffect(() => {
@@ -447,8 +454,8 @@ function Map() {
   return (
     <div>
       <GoogleMap 
-        zoom={9.8} 
-        center={selectedCenter ? selectedCenter : center}
+        zoom={zoom} 
+        center={center}
         mapContainerClassName="map-container"
         onLoad={map => {
           mapRef.current = map;

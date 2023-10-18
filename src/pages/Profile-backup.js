@@ -35,9 +35,6 @@ const Profile = (props) => {
   const navigate = useNavigate();
 
   /////////// DECALRE STATES HERE ///////////
-  const [file, setFile] = useState(null);
-  const [fileInputValue, setFileInputValue] = useState("");
-  const [imagePreviewURL, setImagePreviewURL] = useState("");
 
   const logOut = () => {
     signOut(auth)
@@ -49,34 +46,6 @@ const Profile = (props) => {
     }).catch((error) => {
       console.error("Error:", error);
     });
-  };
-
-  const uploadPhotoButton = () => {
-    return (
-      <div>
-        <br />
-        <label htmlFor="image_upload" className="btn btn-circle">
-          <i class="fi fi-rr-plus"></i>
-        </label>
-        <br />
-        <input
-          type="file"
-          id="image_upload"
-          accept="image/*"
-          // Set state's fileInputValue to "" after submit to reset file input
-          value={fileInputValue}
-          onChange={(e) => fileChange(e)}
-          style={{ opacity: 0 }}
-        />
-      </div>
-    )
-  };
-  
-  const fileChange = (e) => {
-    // "e.target.files" gets all the information of the selected file
-    console.log(e.target.files[0]);
-    setFile(e.target.files[0]);
-    setImagePreviewURL(URL.createObjectURL(e.target.files[0]));
   };
 
   //Equivalent to "componentDidMount()"

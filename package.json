@@ -5,7 +5,6 @@
   "dependencies": {
     "@chakra-ui/react": "^2.8.1",
     "@flaticon/flaticon-uicons": "^2.4.0",
-    "@reach/combobox": "^0.18.0",
     "@react-google-maps/api": "^2.19.2",
     "firebase": "^10.4.0",
     "flowbite-datepicker": "^1.2.2",
