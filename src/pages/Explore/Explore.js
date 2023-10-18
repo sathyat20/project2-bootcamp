@@ -62,7 +62,7 @@ function Map() {
   const [visitButtonStatus, setVisitButtonStatus] = useState(null);
   const [saveButtonStatus, setSaveButtonStatus] = useState(null);
   // Maps Data
-  const [ center, setCenter ] = useState({ lat: 22.396427, lng: 114.109497 });
+  const [ center, setCenter ] = useState({ lat: 22.41595185101585, lng: 114.14785397298424 });
   const [ map, setMap ] = useState(null);
   const [ zoom, setZoom ] = useState(9.8);
   // For handleZoomChanged
