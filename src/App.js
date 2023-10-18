@@ -51,8 +51,8 @@ const App = (props) => {
   }, []);
 
   return (
-    <TripProvider>
-      <UserContext.Provider value={infoToPass}>
+    <UserContext.Provider value={infoToPass}>
+      <TripProvider>
         <Routes>
           <Route path="/" element={<Login />} errorElement={<ErrorPage />} />
           <Route
@@ -76,8 +76,8 @@ const App = (props) => {
             errorElement={<ErrorPage />}
           />
         </Routes>
-      </UserContext.Provider>
-    </TripProvider>
+      </TripProvider>
+    </UserContext.Provider>
   );
 };
 
