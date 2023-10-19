@@ -15,14 +15,34 @@ export default function TripProvider({children}) {
   const [showPastTrips, setShowPastTrips] = useState(false);
   const [showNewTrip, setShowNewTrip] = useState(true);
   const [activeButton, setActiveButton] = useState(1);
-
+  const [addedGems, setAddedGems] = useState([]);
+  const [currentHiddenGemId, setCurrentHiddenGemId] = useState("")
 
   return (
-      <TripContext.Provider value={{title, setTitle, date, setDate, 
-      isTripCreated, setIsTripCreated, trips, setTrips, showPastTrips, setShowPastTrips,
-      showNewTrip, setShowNewTrip, setActiveButton, activeButton}}>
-        {children}
-      </TripContext.Provider>
+    <TripContext.Provider
+      value={{
+        title,
+        setTitle,
+        date,
+        setDate,
+        isTripCreated,
+        setIsTripCreated,
+        trips,
+        setTrips,
+        showPastTrips,
+        setShowPastTrips,
+        showNewTrip,
+        setShowNewTrip,
+        setActiveButton,
+        activeButton,
+        addedGems,
+        setAddedGems,
+        currentHiddenGemId,
+        setCurrentHiddenGemId,
+      }}
+    >
+      {children}
+    </TripContext.Provider>
   );
 
 }

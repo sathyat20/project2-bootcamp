@@ -6,3 +6,7 @@
   display: flex;
   justify-content: center;
 }
+
+.suggestions-container {
+  margin-bottom: 100px; 
+}

@@ -19,8 +19,15 @@ const PlaceDetails = ({
   onButtonChange,
 }) => {
   const { user } = useContext(UserContext);
-  const { setShowPastTrips, setShowNewTrip, setActiveButton } =
-    useContext(TripContext);
+  const {
+    setShowPastTrips,
+    setShowNewTrip,
+    setActiveButton,
+    addedGems,
+    setAddedGems,
+    currentHiddenGemId,
+    setCurrentHiddenGemId,
+  } = useContext(TripContext);
 
   const navigate = useNavigate();
 
@@ -52,10 +59,12 @@ const PlaceDetails = ({
     setShowNewTrip(false);
     setShowPastTrips(true);
     setActiveButton(3);
+    setCurrentHiddenGemId(hiddenGemId)
     navigate("/Create");
   };
 
   const onNewTripsClick = () => {
+    setAddedGems((prevAddedGems) => [...prevAddedGems, hiddenGemId])
     setShowNewTrip(true);
     setShowPastTrips(false);
     setActiveButton(1);

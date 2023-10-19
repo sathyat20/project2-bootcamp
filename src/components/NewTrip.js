@@ -11,7 +11,7 @@ export default function NewTrip({ onNewTripCreated }) {
 
   const [isFormValid, setIsFormValid] = useState(false);
 
-  const { date, setDate, setTitle, title, setIsTripCreated, setTrips } =
+  const { date, setDate, setTitle, title, setIsTripCreated, setTrips, addedGems, setAddedGems, trips } =
     useContext(TripContext);
   const { user } = useContext(UserContext);
 
@@ -55,7 +55,6 @@ export default function NewTrip({ onNewTripCreated }) {
   };
 
   const handleValueChange = (newValue) => {
-    console.log("newValue:", newValue);
     setDate(newValue);
   };
 
@@ -67,12 +66,15 @@ export default function NewTrip({ onNewTripCreated }) {
       startDate: date.startDate,
       endDate: date.endDate,
       userId: user.uid,
+      addedGems: addedGems,
     };
+    console.log(addedGems)
     writeData(newTrip);
     setIsTripCreated(true);
     setTrips((prevTrips) => [...prevTrips, newTrip]);
+    console.log(trips)
     onNewTripCreated();
-  }
+    }
   };
 
   return (

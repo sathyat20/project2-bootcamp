@@ -2,10 +2,12 @@ import "./CurrentTrip.js";
 import { useContext, useEffect, useState } from "react";
 import { TripContext } from "../Provider/TripProvider.js";
 import { database } from "../firebase.js";
-import { ref, onChildAdded } from "firebase/database";
+import { ref, onChildAdded, push, set } from "firebase/database";
 import React from "react";
+import "./CurrentTrip.css";
 
 const DB_GEMS_KEY = "hiddengems";
+const DB_TRIPS_KEY = "trips"
 
 export default function CurrentTrip() {
   const [gems, setGems] = useState([]);
@@ -53,11 +55,29 @@ export default function CurrentTrip() {
     );
   }
 
+const handleAddToTrip = (gem) => {
+  if (trip.addedGems) {
+    if (!trip.addedGems.includes(gem.place_id)) {
+      trip.addedGems.push(gem.place_id);
+      console.log(trip.addedGems)
+
+      const tripRef = ref(database, DB_TRIPS_KEY);
+      set(tripRef, trip);
+
+      setGems(gems.filter((item) => item.place_id !== gem.place_id));
+    }
+  } else {
+    // If trip or addedGems is not defined or not an array, you can handle it accordingly.
+    console.error("trip or addedGems is not defined or not an array");
+  }
+};
+
   return (
     <div>
       <div>
         {trip && trip.isTripCreated ? (
           <div>
+            {console.log(trip)}
             {trip.title && <h1>{trip.title}</h1>}
             {trip.date ? (
               <div>
@@ -71,56 +91,75 @@ export default function CurrentTrip() {
 
       <div className="top-card-container">
         <div className="card lg:card-side bg-base-100 shadow-xl max-w-md">
-          <figure>
-            <img
-              src="https://images.unsplash.com/photo-1619083417049-d08746f461c3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=3174&q=80"
-              alt="Album"
-            />
-          </figure>
-          {gems.length > 0 && (
+          {trip.addedGems && trip.addedGems.length > 0 ? (
             <div className="card-body">
-              <h2 className="card-title">{gems[0].name}</h2>
-              {gems[0].editorial_summary ? (
-                <p>{gems[0].editorial_summary.overview}</p>
-              ) : (
-                <p>{gems[0].formatted_address}</p>
-              )}
-              <div className="rating">{generateStarRating(gems[0].rating)}</div>
-              <div className="card-actions justify-end">
-                <button className="btn btn-primary">Add</button>
-              </div>
+              {trip.addedGems.map((gemId) => {
+                const gem = gems.find((g) => g.place_id === gemId);
+                if (gem) {
+                  return (
+                    <div key={gem.place_id}>
+                      <figure>
+                        <img
+                          src="https://images.unsplash.com/photo-1518599807935-37015b9cefcb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2970&q=80" // Replace with the actual image URL from your data
+                          alt={gem.name}
+                        />
+                      </figure>
+                      <h2 className="card-title">{gem.name}</h2>
+                      {gem.editorial_summary ? (
+                        <p>{gem.editorial_summary.overview}</p>
+                      ) : (
+                        <p>{gem.formatted_address}</p>
+                      )}
+                      <div className="rating">
+                        {generateStarRating(gem.rating)}
+                      </div>
+                    </div>
+                  );
+                }
+                return null;
+              })}
             </div>
+          ) : (
+            <p>No Gems have been added to the trip yet.</p>
           )}
         </div>
       </div>
-      <h2>Suggestions</h2>
-      <div className="carousel carousel-center max-w-md p-4 space-x-4 bg-neutral rounded-box">
-        <div className="carousel-item">
-          {gems.map((gem, index) => (
-            <div
-              className="card card-compact w-96 bg-base-100 shadow-xl"
-              key={index}
-            >
-              <figure>
-                <img
-                  src="https://images.unsplash.com/photo-1518599807935-37015b9cefcb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2970&q=80"
-                  alt="Hong Kong"
-                />
-              </figure>
-              <div className="card-body">
-                <h2 className="card-title">{gem.name}</h2>
-                {gem.editorial_summary ? (
-                  <p>{gem.editorial_summary.overview}</p>
-                ) : (
-                  <p>{gem.formatted_address}</p>
-                )}
-                <div className="rating">{generateStarRating(gem.rating)}</div>
-                <div className="card-actions justify-end">
-                  <button className="btn btn-primary">Add</button>
+
+      <div className="suggestions-container">
+        <h2>Suggestions</h2>
+        <div className="carousel carousel-center max-w-md p-4 space-x-4 bg-neutral rounded-box">
+          <div className="carousel-item">
+            {gems.map((gem, index) => (
+              <div
+                className="card card-compact w-96 bg-base-100 shadow-xl"
+                key={index}
+              >
+                <figure>
+                  <img
+                    src="https://images.unsplash.com/photo-1518599807935-37015b9cefcb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2970&q=80"
+                    alt="Hong Kong"
+                  />
+                </figure>
+                <div className="card-body">
+                  <h2 className="card-title">{gem.name}</h2>
+                  {gem.editorial_summary ? (
+                    <p>{gem.editorial_summary.overview}</p>
+                  ) : (
+                    <p>{gem.formatted_address}</p>
+                  )}
+                  <div className="rating">{generateStarRating(gem.rating)}</div>
+                  <div className="card-actions justify-end">
+                    <button
+                      className="btn btn-primary"
+                      onClick={() => handleAddToTrip(gem)}
+                    >
+                      Add
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
     </div>
