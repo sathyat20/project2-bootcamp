@@ -8,7 +8,7 @@ import CurrentTrip from "../components/CurrentTrip";
 import { TripContext } from "../Provider/TripProvider.js";
 
 export default function Create() {
-  
+
   const [showCurrentTrip, setShowCurrentTrip] = useState(false);
   // const [showPastTrips, setShowPastTrips] = useState(false);
   const { setDate, setTitle, showPastTrips, setShowPastTrips, showNewTrip, setShowNewTrip, activeButton, setActiveButton } = useContext(TripContext);
