@@ -3,14 +3,17 @@ import { UserContext } from "../App";
 
 const PlaceComments = ({
   hiddenGemId,
-  name,
-  comments,
+  hiddenGemObject,
+  hiddenGemSelfAddOnDataObject,
   commentText,
   onBackButtonClick,
   onCommentBoxChange,
   handleCommentSubmit,
 }) => {
   const { user } = useContext(UserContext);
+
+  // const [userComments, setUserComments] = useState(null);
+  const [placeName, setPlaceName] = useState(null);
 
   const displayPostedDate = (time) => {
     let postedTime = new Date(time);
@@ -42,28 +45,62 @@ const PlaceComments = ({
   };
 
   const commentsList = () => {
-    if (comments) {
-      let commentsKey = Object.keys(comments);
-      if (commentsKey.length > 0) {
-        return commentsKey.map((key) => {
-          return (
-            <ul className="list-none text-left text-sm" key={key}>
-              <li>
-                <div>
-                  <h3 className="font-bold">
-                    {comments[key].userName} <span className="text-slate-400">{displayPostedDate(comments[key].commentDate)}</span>
-                  </h3>
-                  <p>
-                    {comments[key].commentText}
-                  </p>
-                </div>
-              </li>
-            </ul>
-          );
-        });
+    if (hiddenGemSelfAddOnDataObject) {
+      if (hiddenGemSelfAddOnDataObject.comments) {
+        let commentsKey = Object.keys(hiddenGemSelfAddOnDataObject.comments);
+        if (commentsKey.length > 0) {
+          return commentsKey.map((key) => {
+            return (
+              <ul className="list-none text-left text-sm" key={key}>
+                <li>
+                  <div>
+                    <h3 className="font-bold">
+                      {hiddenGemSelfAddOnDataObject.comments[key].userName} <span className="text-slate-400">{displayPostedDate(hiddenGemSelfAddOnDataObject.comments[key].commentDate)}</span>
+                    </h3>
+                    <p>
+                      {hiddenGemSelfAddOnDataObject.comments[key].commentText}
+                    </p>
+                  </div>
+                </li>
+              </ul>
+            );
+          });
+        };
       };
-    };
+    }
   };
+
+  useState(() => {
+    if (hiddenGemObject) {
+      setPlaceName(hiddenGemObject.name)
+    }
+  },[hiddenGemObject])
+
+  // useState(() => {
+  //   if (hiddenGemSelfAddOnDataObject) {
+  //     if (hiddenGemSelfAddOnDataObject.comments) {
+  //       let commentsKey = Object.keys(hiddenGemSelfAddOnDataObject.comments);
+  //       if (commentsKey.length > 0) {
+  //         setUserComments(commentsKey.map((key) => {
+  //           return (
+  //             <ul className="list-none text-left text-sm" key={key}>
+  //               <li>
+  //                 <div>
+  //                   <h3 className="font-bold">
+  //                     {hiddenGemSelfAddOnDataObject.comments[key].userName} <span className="text-slate-400">{displayPostedDate(hiddenGemSelfAddOnDataObject.comments[key].commentDate)}</span>
+  //                   </h3>
+  //                   <p>
+  //                     {hiddenGemSelfAddOnDataObject.comments[key].commentText}
+  //                   </p>
+  //                 </div>
+  //               </li>
+  //             </ul>
+  //           );
+  //         }))
+  //       };
+  //     }
+  //   };
+  // }, [hiddenGemSelfAddOnDataObject])
 
   return (
     <dialog id="placeDetailsModal" className="modal modal-bottom">
@@ -74,16 +111,16 @@ const PlaceComments = ({
           >
             <i className="fi fi-rr-angle-left"></i>
           </button>
-          <h1 className="font-bold text-xl">{name}</h1>
+          <h1 className="font-bold text-sm">{placeName}</h1>
           <i className="fi fi-rr-info"></i>
         </div>
         <hr />
         <br />
         <div className="flex flex-col justify-center text-left content-center gap-3">
           {/* Comment List */}
-          {commentsList() ? (
+          {commentsList() ? 
             commentsList()
-          ) : (
+            : (
             <div className="flex flex-col justify-center text-center content-center">
               <i className="fi fi-rr-comment-minus"></i>
               <p>No comments</p>

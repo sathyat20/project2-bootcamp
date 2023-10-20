@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { UserContext } from "../App";
 import { useNavigate } from "react-router-dom";
 import { TripContext } from "../Provider/TripProvider.js";
@@ -30,6 +30,10 @@ const PlaceDetails = ({
   } = useContext(TripContext);
 
   const navigate = useNavigate();
+
+  // const [userLike, setUserLike] = useState(null);
+  // const [userVisit, setUserVisit] = useState(null);
+  // const [userSave, setUserSave] = useState(null);
 
   const calculateCount = (correspondObject) => {
     let count = 0;
@@ -95,6 +99,41 @@ const PlaceDetails = ({
     }
   };
 
+  // useEffect(() => {
+  //   console.log(user);
+  //   if (user) {
+  //     if (likes) {
+  //       if (likes[user.uid]){
+  //         setUserLike(likes[user.uid]);
+  //       } else {
+  //         setUserLike(false);
+  //       }
+  //     } else {
+  //       setUserLike(false);
+  //     }
+
+  //     if (visits) {
+  //       if (visits[user.uid]){
+  //         setUserVisit(visits[user.uid]);
+  //       } else {
+  //         setUserVisit(false);
+  //       }
+  //     } else {
+  //       setUserVisit(false);
+  //     }
+
+  //     if (saves) {
+  //       if (saves[user.uid] !== undefined){
+  //         setUserSave(saves[user.uid]);
+  //       } else {
+  //         setUserSave(false);
+  //       }
+  //     } else {
+  //       setUserSave(false);
+  //     }
+  //   }
+  // }, [user, likes, visits, saves])
+
   return (
     <dialog id="placeDetailsModal" className="modal modal-bottom">
       <div className="modal-box">
@@ -116,7 +155,9 @@ const PlaceDetails = ({
           </div>
           {/* Buttons Row */}
           <div className="flex justify-between text-center content-center">
+
             <div className="flex justify-between text-center content-center">
+              
               {/* Like Button */}
               {userSelfLike() ? (
                 <form name="true" id="like" onSubmit={(e) => onButtonChange(e)}>
