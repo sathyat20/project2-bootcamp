@@ -383,8 +383,6 @@ function Map() {
     }
   }, [cardRender])
 
-  // This "useEffect" seems not listenning to the boolean changes of Likes.
-  // Can "useEffect" listen to a specific key e.g. [hiddenGemSelfAddOnData[hiddenGemId].likes] ??
   // When hiddenGemSelfAddOnData is updated, triggers either "cardRenderMain()" or "cardRenderMessages()".
   useEffect(() => {
     if (cardStage === 0) {
@@ -477,6 +475,5 @@ function Map() {
       </GoogleMap>
       {cardRender}
     </div>
-
   );
 }
