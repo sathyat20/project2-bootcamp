@@ -11,7 +11,7 @@ export default function NewTrip({ onNewTripCreated }) {
 
   const [isFormValid, setIsFormValid] = useState(false);
 
-  const { date, setDate, setTitle, title, setIsTripCreated, setTrips, addedGems, setAddedGems, trips } =
+  const { date, setDate, setTitle, title, setIsTripCreated, setTrips, key, setKey, addedGems, setAddedGems, trips } =
     useContext(TripContext);
   const { user } = useContext(UserContext);
 
@@ -27,28 +27,29 @@ export default function NewTrip({ onNewTripCreated }) {
 
   useEffect(() => {
     const tripsRef = ref(database, DB_TRIPS_KEY);
-    onChildAdded(tripsRef, (data) => {
-      const trip = data.val()
+    onChildAdded(tripsRef, (trip) => {
+      // const trip = data
       if (trip.userId === user.uid)
         setTrips((prevTrips) => [
           ...prevTrips,
-          { key: data.key, val: trip },
+          { key: trip.key, val: trip.val() },
         ]);
     });
   }, [setTrips, user]);
 
-  const writeData = (newTrip) => {
+  const writeData = (trip) => {
+    console.log(trip)
     const tripListRef = ref(database, DB_TRIPS_KEY);
-    const newTripRef = push(tripListRef);
+    // const newTripRef = push(tripListRef);
+    // set(newTripRef, trip);
+    push(tripListRef, trip).then((data) => {setKey(data.key); console.log(key)})
 
-    set(newTripRef, newTrip);
+    console.log("This is the key", key);
   };
 
   const handleChange = (event) => {
-
     const name = event.target.id;
     const value = event.target.value;
-
     if (name === "Title") {
       setTitle(value);
     }
@@ -61,19 +62,19 @@ export default function NewTrip({ onNewTripCreated }) {
   const submit = (event) => {
     event.preventDefault();
     if (isFormValid) {
-    const newTrip = {
-      title,
-      startDate: date.startDate,
-      endDate: date.endDate,
-      userId: user.uid,
-      addedGems: addedGems,
-    };
-    console.log(addedGems)
-    writeData(newTrip);
-    setIsTripCreated(true);
-    setTrips((prevTrips) => [...prevTrips, newTrip]);
-    console.log(trips)
-    onNewTripCreated();
+      const newTrip = {
+        title,
+        startDate: date.startDate,
+        endDate: date.endDate,
+        userId: user.uid,
+        addedGems: addedGems || [],
+      };
+      console.log(addedGems)
+      console.log(newTrip)
+      writeData(newTrip);
+      setIsTripCreated(true);
+      setTrips((prevTrips) => [...prevTrips, newTrip]);
+      onNewTripCreated();
     }
   };
 
