@@ -203,6 +203,8 @@ function Map() {
         set(dbRefForLikes, true);
       };
     };
+    //Re-render the modal
+    cardRenderMain();
   }, [likeButtonStatus])
 
   useEffect(() => {
@@ -233,6 +235,8 @@ function Map() {
         set(dbRefForVisits, true);
       };
     };
+    //Re-render the modal
+    cardRenderMain();
   }, [visitButtonStatus])
 
   useEffect(() => {
@@ -263,6 +267,8 @@ function Map() {
         set(dbRefForSaves, true);
       };
     };
+    //Re-render the modal
+    cardRenderMain();
   }, [saveButtonStatus])
 
   const onCommentButtonClick = () => {
@@ -377,8 +383,6 @@ function Map() {
     }
   }, [cardRender])
 
-  // This "useEffect" seems not listenning to the boolean changes of Likes.
-  // Can "useEffect" listen to a specific key e.g. [hiddenGemSelfAddOnData[hiddenGemId].likes] ??
   // When hiddenGemSelfAddOnData is updated, triggers either "cardRenderMain()" or "cardRenderMessages()".
   useEffect(() => {
     if (cardStage === 0) {
@@ -422,7 +426,7 @@ function Map() {
             //Data from user created inside App
             likes={hiddenGemSelfAddOnDataObject.likes}
             visits={hiddenGemSelfAddOnDataObject.visits}
-            saved={hiddenGemSelfAddOnDataObject.saved}
+            saves={hiddenGemSelfAddOnDataObject.saves}
             //Handles series of action
             onCommentButtonClick={onCommentButtonClick}
             onButtonChange={onButtonChange}
@@ -439,6 +443,8 @@ function Map() {
     let cardRender = (
         <PlaceComments
           hiddenGemId={hiddenGemId} //equivalent to place_id
+          //Data from Google API
+          hiddenGemObject={hiddenGemObject}
           //Data from user created inside App
           hiddenGemSelfAddOnDataObject={hiddenGemSelfAddOnDataObject}
           //Handles series of action
@@ -469,6 +475,5 @@ function Map() {
       </GoogleMap>
       {cardRender}
     </div>
-
   );
 }
