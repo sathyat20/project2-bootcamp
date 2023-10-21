@@ -68,7 +68,7 @@ const PlaceDetails = ({
   };
 
   const onNewTripsClick = () => {
-    setAddedGems((prevAddedGems) => [...prevAddedGems, hiddenGemId])
+    setAddedGems([hiddenGemId])
     setShowNewTrip(true);
     setShowPastTrips(false);
     setActiveButton(1);

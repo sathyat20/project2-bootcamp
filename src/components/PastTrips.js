@@ -1,23 +1,28 @@
 import { database } from "../firebase.js";
 import { ref, onChildAdded, set, get } from "firebase/database";
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import { TripContext } from "../Provider/TripProvider.js";
 import { UserContext } from "../App";
 import "./PastTrips.css"
 
 const DB_TRIPS_KEY = "trips";
-const DB_GEMS_KEY = "hiddengems"
 
 export default function PastTrips({ onPastTripClick }) {
+  const [currentData, setCurrentData] = useState(null)
+  const [currentKey, setCurrentKey] = useState(null);
+
   const {
     setDate,
     setTitle,
     trips,
     setTrips,
     setIsTripCreated,
-    setCurrentHiddenGemId,
     currentHiddenGemId,
-    setAddedGems
+    setCurrentHiddenGemId,
+    setAddedGems,
+    addedGems,
+    key,
+    setKey
   } = useContext(TripContext);
   const { user } = useContext(UserContext);
 
@@ -38,39 +43,91 @@ export default function PastTrips({ onPastTripClick }) {
 
   const handleClick = (oldTrip) => {
 
-    const { title, startDate, endDate, addedGems } = oldTrip.val;
-    setTitle(title);
-    setDate({
-      startDate: startDate,
-      endDate: endDate,
-    });
-    setAddedGems(addedGems)
+    console.log("oldTrip key is", oldTrip.key)
 
-    // if (Array.isArray(addedGems) && addedGems.length > 0) {
-    //   // const updatedAddedGems = oldTrip.addedGems.push(currentHiddenGemId);
-    //   const gemsData = []
-    //   const gemsRef = ref(database, DB_GEMS_KEY)
+    const tripKey = oldTrip.key;
+    const tripRef = ref(database, `${DB_TRIPS_KEY}/${tripKey}`);
 
-    //   for (const gemId of addedGems) {
-    //     const gemSnapshot = get(ref(gemsRef, gemId))
-    //     if (gemSnapshot.exists()) {
-    //       gemsData.push({key: gemSnapshot.key, val:gemSnapshot.val()})
-    //     }
-    //   }
+    get(tripRef)
+      .then((snapshot) => {
+        if (snapshot.exists()) {
+          const tripData = snapshot.val();
+          setCurrentData(tripData)
+          setCurrentKey(tripKey)
+          setKey(tripKey)
+          console.log("This is the tripData", tripData)
+          console.log("This is the tripKey", tripKey)
+          const { title, startDate, endDate, addedGems: existingAddedGems = [] } = tripData;
+          console.log("Existing", existingAddedGems)
+          setAddedGems(existingAddedGems)
+          setTitle(title);
+          console.log("THe title is", title)
+          setDate({
+            startDate: startDate,
+            endDate: endDate,
+          });
+          console.log("THe date is", startDate);
 
-    console.log(oldTrip.val);
-    // console.log(gemsData);
-    setIsTripCreated(true);
-    onPastTripClick();
-  };
+          console.log("Hem is", currentHiddenGemId)
+          if (currentHiddenGemId !== "") {
+            const updatedGems = [...existingAddedGems, currentHiddenGemId]
+            setAddedGems(updatedGems);
+            console.log("These are the new addedGems", updatedGems)
+            setCurrentHiddenGemId("");
+            // onPastTripClick()
+          } 
 
+        } else {
+          console.error("Trip not found.");
+        }
+      })
+      .catch((error) => {
+        console.error("Error retrieving trip details:", error);
+      });
+    }
+
+    useEffect(() => {
+      console.log(currentKey, addedGems)
+      if (addedGems && currentKey) {
+        // console.log(currentKey)
+        console.log("Updating database with:", addedGems);
+        const tripRef = ref(database, `${DB_TRIPS_KEY}/${currentKey}`);
+          console.log(addedGems);
+          set(tripRef, { ...currentData, addedGems: addedGems });
+          setIsTripCreated(true);
+          onPastTripClick();
+      }
+    }, [addedGems])
+
+    const handleRemoveTrip = async (tripKey) => {
+      if (tripKey) {
+        const tripRef = ref(database, `${DB_TRIPS_KEY}/${tripKey}`);
+        try {
+          await set(tripRef, null); 
+          setTrips((prevTrips) =>
+            prevTrips.filter((trip) => trip.key !== tripKey)
+          ); 
+          console.log("Trip removed successfully");
+        } catch (error) {
+          console.error("Error removing trip:", error);
+        }
+      } else {
+        console.error("No trip key available for removal");
+      }
+    };
 
   return (
     <div className="join join-vertical button-container">
       {trips.map((trip) => (
         <div key={trip.key} className="my-2">
+          <button
+            className="btn bg-red-500 text-white px-2 h-2 mr-2"
+            onClick={() => handleRemoveTrip(trip.key)}
+          >
+            X
+          </button>
           <button className="btn px-4 py-2" onClick={() => handleClick(trip)}>
-            {trip.val && trip.val.title ? `${trip.val.title} +`: ""}
+            {trip.val && trip.val.title ? `${trip.val.title} +` : ""}
           </button>
         </div>
       ))}

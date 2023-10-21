@@ -15,8 +15,9 @@ export default function TripProvider({children}) {
   const [showPastTrips, setShowPastTrips] = useState(false);
   const [showNewTrip, setShowNewTrip] = useState(true);
   const [activeButton, setActiveButton] = useState(1);
-  const [addedGems, setAddedGems] = useState([]);
+  const [addedGems, setAddedGems] = useState(undefined);
   const [currentHiddenGemId, setCurrentHiddenGemId] = useState("")
+  const [key, setKey] = useState("")
 
   return (
     <TripContext.Provider
@@ -39,6 +40,8 @@ export default function TripProvider({children}) {
         setAddedGems,
         currentHiddenGemId,
         setCurrentHiddenGemId,
+        key,
+        setKey
       }}
     >
       {children}
