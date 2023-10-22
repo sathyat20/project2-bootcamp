@@ -18,6 +18,7 @@ export default function TripProvider({children}) {
   const [addedGems, setAddedGems] = useState(undefined);
   const [currentHiddenGemId, setCurrentHiddenGemId] = useState("")
   const [key, setKey] = useState("")
+  const [showCurrentTrip, setShowCurrentTrip] = useState(false)
 
   return (
     <TripContext.Provider
@@ -41,7 +42,9 @@ export default function TripProvider({children}) {
         currentHiddenGemId,
         setCurrentHiddenGemId,
         key,
-        setKey
+        setKey,
+        showCurrentTrip,
+        setShowCurrentTrip
       }}
     >
       {children}

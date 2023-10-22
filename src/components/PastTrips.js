@@ -3,6 +3,7 @@ import { ref, onChildAdded, set, get } from "firebase/database";
 import { useContext, useEffect, useState } from "react";
 import { TripContext } from "../Provider/TripProvider.js";
 import { UserContext } from "../App";
+import CurrentTrip from "./CurrentTrip.js";
 import "./PastTrips.css"
 
 const DB_TRIPS_KEY = "trips";
@@ -22,7 +23,9 @@ export default function PastTrips({ onPastTripClick }) {
     setAddedGems,
     addedGems,
     key,
-    setKey
+    setKey,
+    setShowCurrentTrip,
+    setShowPastTrips
   } = useContext(TripContext);
   const { user } = useContext(UserContext);
 
@@ -31,19 +34,18 @@ export default function PastTrips({ onPastTripClick }) {
       const tripsRef = ref(database, DB_TRIPS_KEY);
       setTrips([]);
 
-      onChildAdded(tripsRef, (data) => {
+      const unmount = onChildAdded(tripsRef, (data) => {
         const tripData = { key: data.key, val: data.val() };
 
         if (tripData.val.userId === user.uid) {
           setTrips((prevTrips) => [tripData, ...prevTrips]);
         }
       });
+      return () => unmount()
     }
   }, [setTrips, user]);
 
   const handleClick = (oldTrip) => {
-
-    console.log("oldTrip key is", oldTrip.key)
 
     const tripKey = oldTrip.key;
     const tripRef = ref(database, `${DB_TRIPS_KEY}/${tripKey}`);
@@ -74,8 +76,10 @@ export default function PastTrips({ onPastTripClick }) {
             setAddedGems(updatedGems);
             console.log("These are the new addedGems", updatedGems)
             setCurrentHiddenGemId("");
-            // onPastTripClick()
           } 
+
+          setShowCurrentTrip(true)
+          setShowPastTrips(false)
 
         } else {
           console.error("Trip not found.");
