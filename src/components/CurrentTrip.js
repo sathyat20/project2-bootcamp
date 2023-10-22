@@ -124,9 +124,11 @@ export default function CurrentTrip() {
         return;
       }
 
+
       const newAddedGems = [...addedGems, gem.place_id];
       setAddedGems(newAddedGems)
       console.log("Added Gems after adding:", newAddedGems);
+
 
       const tripRef = ref(database, `${DB_TRIPS_KEY}/${key}/addedGems`);
         try {
@@ -144,6 +146,7 @@ export default function CurrentTrip() {
     return (
       <div className="card lg:card-side bg-base-100 shadow-xl max-w-md p-4">
         {addedGems.length > 0 ? (
+
           <div className="card-body">
             {addedGems.map((gemId) => {
               const gem = gems.find((g) => g.place_id === gemId);
@@ -241,6 +244,10 @@ export default function CurrentTrip() {
             </div>
           ) : null}
         </div>
+       </div>
+
+      <div className="top-card-container mb-4">
+        {populateAddedGems()}
       </div>
 
       <div className="top-card-container mb-4">{populateAddedGems()}</div>
