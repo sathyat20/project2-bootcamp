@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { TripContext } from "../Provider/TripProvider.js";
 import { database } from "../firebase.js";
-import { ref, onChildAdded, push, set, get, onValue } from "firebase/database";
+import { ref, set, get, onValue } from "firebase/database";
 import React from "react";
 import "./CurrentTrip.css";
 
@@ -13,7 +13,7 @@ export default function CurrentTrip() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [gemIdToDelete, setGemIdToDelete] = useState(null);
   const [isShaking, setIsShaking] = useState(false);
-  const [forceUpdate, setForceUpdate] = useState(0);
+  const [isGemAlreadyAdded, setIsGemAlreadyAdded] = useState(false)
 
   const {
     title,
@@ -23,12 +23,6 @@ export default function CurrentTrip() {
     setAddedGems,
     key,
   } = useContext(TripContext);
-
-    const [localAddedGems, setLocalAddedGems] = useState(addedGems || []);
-
-    useEffect(() => {
-      setLocalAddedGems(addedGems || []);
-    }, [addedGems]);
 
   useEffect(() => {
     const fetchGems = async () => {
@@ -41,10 +35,6 @@ export default function CurrentTrip() {
       } catch (error) {
         console.error("Error fetching gems:", error);
       }
-      // onChildAdded(gemsRef, (snapshot) => {
-      //   const gemsData = snapshot.val();
-
-      //   setGems((prevGems) => [gemsData, ...prevGems]);
     };
     fetchGems();
   }, []);
@@ -68,6 +58,27 @@ export default function CurrentTrip() {
               onClick={onCancel}
             >
               No
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  function GemAlertModal({ isOpen, onClose }) {
+    if (!isOpen) return null;
+
+    return (
+      <div className="fixed inset-0 flex items-center justify-center z-50">
+        <div className="bg-white p-4 rounded shadow-lg w-96">
+          <h2 className="text-xl mb-4">Oops!</h2>
+          <p>This gem is already in the trip!</p>
+          <div className="flex justify-end mt-4">
+            <button
+              className="px-4 py-2 bg-blue-500 text-white rounded"
+              onClick={onClose}
+            >
+              Okay
             </button>
           </div>
         </div>
@@ -107,60 +118,104 @@ export default function CurrentTrip() {
     );
   }
 
-  const handleAddToTrip = async (gem) => {
-    // console.log(gem)
-    // console.log(addedGems)
-    if (localAddedGems) {
-      if (!localAddedGems.includes(gem.place_id)) {
-        // addedGems.push(gem.place_id); //fix this
-        const newAddedGems = [...localAddedGems, gem.place_id];
-        const newGems = gems.filter((item) => item.place_id !== gem.place_id)
-        setLocalAddedGems(newAddedGems);
-        setGems(newGems)
-        console.log("Added Gems after adding:", newAddedGems);
-        setForceUpdate((prev) => prev + 1);
+  const handleAddToTrip = (gem) => {
 
-        const tripRef = ref(database, `${DB_TRIPS_KEY}/${key}/addedGems`);
+      if (addedGems.includes(gem.place_id)) {
+        setIsGemAlreadyAdded(true);
+        return;
+      }
+
+      const newAddedGems = [...addedGems, gem.place_id];
+      const newGems = gems.filter((item) => item.place_id !== gem.place_id)
+      setAddedGems(newAddedGems)
+      setGems(newGems)
+      console.log("Added Gems after adding:", newAddedGems);
+
+      const tripRef = ref(database, `${DB_TRIPS_KEY}/${key}/addedGems`);
         try {
           // Update the 'addedGems' field in the specific trip
-          await set(tripRef, newAddedGems);
-          // window.location.reload();
-          //  setGems((prevGems) =>
-          //    prevGems.filter((item) => item.place_id !== gem.place_id)
-          //  );
+          set(tripRef, newAddedGems);
 
-          // Update the local state to reflect the changes
         } catch (error) {
           console.error("Error updating addedGems in the database:", error);
           setAddedGems(addedGems);
           setGems([...gems, gem]);
         }
       }
-    } else {
-      console.error("trip or addedGems is not defined or not an array");
-    }
-  };
+
+  const populateAddedGems = () => {
+    console.log("hey",addedGems)
+    return (
+      <div className="card lg:card-side bg-base-100 shadow-xl max-w-md p-4">
+        {addedGems ? (
+          <div className="card-body">
+            {addedGems.map((gemId) => {
+              const gem = gems.find((g) => g.place_id === gemId);
+              if (gem) {
+                return (
+                  <div key={gem.place_id} className="relative mb-4">
+                    <figure className="mb-2">
+                      <img
+                        src="https://images.unsplash.com/photo-1518599807935-37015b9cefcb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2970&q=80" // Replace with the actual image URL from your data
+                        alt={gem.name}
+                      />
+                    </figure>
+                    <h2 className="card-title mb-2">{gem.name}</h2>
+                    {gem.editorial_summary ? (
+                      <p className="mb-2">{gem.editorial_summary.overview}</p>
+                    ) : (
+                      <p className="mb-2">{gem.formatted_address}</p>
+                    )}
+                    <div className="rating mb-2">
+                      {generateStarRating(gem.rating)}
+                    </div>
+                    <button
+                      className={`absolute top-2 right-2 bg-red-500 text-white w-4 h-4 flex items-center justify-center text-xs hover:bg-red-600 ${
+                        isShaking ? "shake" : ""
+                      }`}
+                      onMouseEnter={() => setIsShaking(true)}
+                      onMouseLeave={() => setIsShaking(false)}
+                      onClick={() => {
+                        setIsModalOpen(true);
+                        setGemIdToDelete(gem.place_id);
+                      }}
+                    >
+                      X
+                    </button>
+                  </div>
+                );
+              }
+              return null;
+            })}
+          </div>
+        ) : (
+          <p>No Gems have been added to the trip yet.</p>
+        )}
+      </div>
+    );
+  }
 
   useEffect(() => {
-    // Listen to changes on the specific trip's data
-    const tripRef = ref(database, `${DB_TRIPS_KEY}/${key}`);
+    // // Listen to changes on the specific trip's data
+    // const tripRef = ref(database, `${DB_TRIPS_KEY}/${key}/addedGems`);
 
-    const tripChangedUnsubscribe = onValue(tripRef, (snapshot) => {
-      console.log("Database value changed", snapshot.val());
-      const updatedTripData = snapshot.val();
-      if (updatedTripData && updatedTripData.addedGems) {
-        setAddedGems(updatedTripData.addedGems);
-      }
-    });
+    // const tripChanged = onValue(tripRef, (snapshot) => {
+    //   console.log("Database value changed", snapshot.val());
+    //   const updatedTripData = snapshot.val();
+    //   if (updatedTripData && updatedTripData.addedGems) {
+    //     setAddedGems(updatedTripData.addedGems);
+    //   }
+    // });
 
-    return () => {
-      tripChangedUnsubscribe();
-    };
-  }, [key]);
+    // return () => {
+    //   tripChanged();
+    // };
+    populateAddedGems()
+  }, [addedGems]);
 
   const handleRemoveFromTrip = async (gemIdToRemove) => {
-    const updatedGems = localAddedGems.filter((gemId) => gemId !== gemIdToRemove);
-    setLocalAddedGems(updatedGems);
+    const updatedGems = addedGems.filter((gemId) => gemId !== gemIdToRemove);
+    setAddedGems(updatedGems);
 
     const gemToRemove = gems.find((g) => g.place_id === gemIdToRemove);
     if (gemToRemove) {
@@ -194,57 +249,8 @@ export default function CurrentTrip() {
         ) : null}
       </div>
 
-      <div key={forceUpdate}>
-        <div className="top-card-container mb-4">
-          <div className="card lg:card-side bg-base-100 shadow-xl max-w-md p-4">
-            {addedGems && addedGems.length > 0 ? (
-              <div className="card-body">
-                {addedGems.map((gemId) => {
-                  const gem = gems.find((g) => g.place_id === gemId);
-                  if (gem) {
-                    return (
-                      <div key={gem.place_id} className="relative mb-4">
-                        <figure className="mb-2">
-                          <img
-                            src="https://images.unsplash.com/photo-1518599807935-37015b9cefcb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2970&q=80" // Replace with the actual image URL from your data
-                            alt={gem.name}
-                          />
-                        </figure>
-                        <h2 className="card-title mb-2">{gem.name}</h2>
-                        {gem.editorial_summary ? (
-                          <p className="mb-2">
-                            {gem.editorial_summary.overview}
-                          </p>
-                        ) : (
-                          <p className="mb-2">{gem.formatted_address}</p>
-                        )}
-                        <div className="rating mb-2">
-                          {generateStarRating(gem.rating)}
-                        </div>
-                        <button
-                          className={`absolute top-2 right-2 bg-red-500 text-white w-4 h-4 flex items-center justify-center text-xs hover:bg-red-600 ${
-                            isShaking ? "shake" : ""
-                          }`}
-                          onMouseEnter={() => setIsShaking(true)}
-                          onMouseLeave={() => setIsShaking(false)}
-                          onClick={() => {
-                            setIsModalOpen(true);
-                            setGemIdToDelete(gem.place_id);
-                          }}
-                        >
-                          X
-                        </button>
-                      </div>
-                    );
-                  }
-                  return null;
-                })}
-              </div>
-            ) : (
-              <p>No Gems have been added to the trip yet.</p>
-            )}
-          </div>
-        </div>
+      <div className="top-card-container mb-4">
+        {populateAddedGems()}
       </div>
 
       <div className="suggestions-container">
@@ -253,7 +259,7 @@ export default function CurrentTrip() {
           <div className="carousel-item space-x-4">
             {gems.map((gem, index) => (
               <div
-                className="card card-compact w-96 bg-base-100 shadow-xl mb-4"
+                className={`card card-compact w-96 bg-base-100 shadow-xl mb-4 ${addedGems.includes(gem.place_id) ? "gem-already-added" : ""}`}
                 key={index}
               >
                 <figure className="mb-2">
@@ -297,6 +303,10 @@ export default function CurrentTrip() {
           setIsModalOpen(false);
           setGemIdToDelete(null);
         }}
+      />
+      <GemAlertModal
+        isOpen={isGemAlreadyAdded}
+        onClose={() => setIsGemAlreadyAdded(false)}
       />
     </div>
   );

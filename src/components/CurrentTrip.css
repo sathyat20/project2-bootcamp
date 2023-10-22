@@ -30,4 +30,8 @@
   animation: shake 0.6s cubic-bezier(.36, .07, .19, .97) both;
 }
 
+.gem-already-added {
+  opacity: 0.2;
+  pointer-events: none; /* This will make it non-clickable */
+}
 
