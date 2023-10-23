@@ -4,9 +4,11 @@ import { database } from "../firebase.js";
 import { ref, set, get, onValue } from "firebase/database";
 import React from "react";
 import "./CurrentTrip.css";
+import Carousel from "./Carousel.js";
 
 const DB_GEMS_KEY = "hiddengems";
 const DB_TRIPS_KEY = "trips";
+const DB_PHOTOS_KEY = "hiddengems-selfaddondata";
 
 export default function CurrentTrip() {
   const [gems, setGems] = useState([]);
@@ -14,6 +16,7 @@ export default function CurrentTrip() {
   const [gemIdToDelete, setGemIdToDelete] = useState(null);
   const [isShaking, setIsShaking] = useState(false);
   const [isGemAlreadyAdded, setIsGemAlreadyAdded] = useState(false)
+  const [gemPhotos, setGemPhotos] = useState({});
 
   const {
     title,
@@ -35,8 +38,47 @@ export default function CurrentTrip() {
         console.error("Error fetching gems:", error);
       }
     };
+
+    const fetchPhotoUrls = async () => {
+      const photosRef = ref(database, DB_PHOTOS_KEY);
+      try {
+        const snapshot = await get(photosRef);
+        if (snapshot.exists()) {
+          const fetchedPhotos = snapshot.val()
+          console.log(
+            "Fetched photos are",
+            fetchedPhotos["ChIJ57HdoAAMBDQRTy_mf7CoRRk"].photos
+          );
+          setGemPhotos(fetchedPhotos);
+        }
+      } catch (error) {
+        console.error("Error fetching photo URLs:", error);
+      }
+    };
     fetchGems();
+    fetchPhotoUrls()
   }, []);
+
+  function formatDate(rawDate) {
+    const months = [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
+    ];
+    const date = new Date(rawDate);
+    return `${
+      months[date.getMonth()]
+    } ${date.getDate()}, ${date.getFullYear()}`;
+  }
 
   function DeleteModal({ isOpen, onConfirm, onCancel }) {
     if (!isOpen) return null;
@@ -124,11 +166,9 @@ export default function CurrentTrip() {
         return;
       }
 
-
       const newAddedGems = [...addedGems, gem.place_id];
       setAddedGems(newAddedGems)
       console.log("Added Gems after adding:", newAddedGems);
-
 
       const tripRef = ref(database, `${DB_TRIPS_KEY}/${key}/addedGems`);
         try {
@@ -145,8 +185,8 @@ export default function CurrentTrip() {
   const populateAddedGems = () => {
     return (
       <div className="card lg:card-side bg-base-100 shadow-xl max-w-md p-4">
+        
         {addedGems.length > 0 ? (
-
           <div className="card-body">
             {addedGems.map((gemId) => {
               console.log(gemId);
@@ -157,7 +197,12 @@ export default function CurrentTrip() {
                   <div key={gem.place_id} className="relative mb-4">
                     <figure className="mb-2">
                       <img
-                        src="https://images.unsplash.com/photo-1518599807935-37015b9cefcb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2970&q=80" // Replace with the actual image URL from your data
+                        src={
+                          (gemPhotos[gem.place_id] &&
+                            gemPhotos[gem.place_id].photos &&
+                            gemPhotos[gem.place_id].photos[0]) ||
+                          "https://images.unsplash.com/photo-1518599807935-37015b9cefcb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2970&q=80"
+                        }
                         alt={gem.name}
                       />
                     </figure>
@@ -197,7 +242,7 @@ export default function CurrentTrip() {
   }
 
   useEffect(() => {
-    // // Listen to changes on the specific trip's data
+    // Listen to changes on the specific trip's data
     // const tripRef = ref(database, `${DB_TRIPS_KEY}/${key}/addedGems`);
 
     // const tripChanged = onValue(tripRef, (snapshot) => {
@@ -238,24 +283,22 @@ export default function CurrentTrip() {
     <div className="p-4">
       <div className="mb-4">
         <div>
-          {title && <h1 className="mb-2">{title}</h1>}
+          {title && <h1 className="title-font mb-2">{title}</h1>}
           {date ? (
             <div>
-              <h1 className="mb-1">Start Date: {date.startDate}</h1>
-              <h1>End Date: {date.endDate}</h1>
+              <h1 className="date-font mb-1">
+                Start: {formatDate(date.startDate)}
+              </h1>
+              <h1 className="date-font">End: {formatDate(date.endDate)}</h1>
             </div>
           ) : null}
         </div>
-       </div>
-
-      <div className="top-card-container mb-4">
-        {populateAddedGems()}
       </div>
 
       <div className="top-card-container mb-4">{populateAddedGems()}</div>
 
       <div className="suggestions-container">
-        <h2 className="mb-4">Suggestions</h2>
+        <h2 className="title-font mb-4">Suggestions</h2>
         <div className="carousel carousel-center max-w-md p-4 space-x-4 bg-neutral rounded-box">
           <div className="carousel-item space-x-4">
             {gems.map((gem, index) => (
@@ -266,10 +309,11 @@ export default function CurrentTrip() {
                 key={index}
               >
                 <figure className="mb-2">
-                  <img
-                    src="https://images.unsplash.com/photo-1518599807935-37015b9cefcb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2970&q=80"
-                    alt="Hong Kong"
-                  />
+                  <Carousel
+                    images={
+                      (gemPhotos[gem.place_id] && gemPhotos[gem.place_id].photos) || []
+                    }
+                  ></Carousel>
                 </figure>
                 <div className="card-body">
                   <h2 className="card-title mb-2">{gem.name}</h2>
