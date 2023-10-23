@@ -126,9 +126,7 @@ export default function CurrentTrip() {
       }
 
       const newAddedGems = [...addedGems, gem.place_id];
-      //const newGems = gems.filter((item) => item.place_id !== gem.place_id)
       setAddedGems(newAddedGems)
-      //setGems(newGems)
       console.log("Added Gems after adding:", newAddedGems);
 
       const tripRef = ref(database, `${DB_TRIPS_KEY}/${key}/addedGems`);
@@ -138,8 +136,8 @@ export default function CurrentTrip() {
 
         } catch (error) {
           console.error("Error updating addedGems in the database:", error);
-          // setAddedGems(addedGems);
-          // setGems([...gems, gem]);
+          setAddedGems(addedGems);
+          setGems([...gems, gem]);
         }
       }
 
