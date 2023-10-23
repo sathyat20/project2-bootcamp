@@ -149,7 +149,9 @@ export default function CurrentTrip() {
 
           <div className="card-body">
             {addedGems.map((gemId) => {
+              console.log(gemId);
               const gem = gems.find((g) => g.place_id === gemId);
+              console.log(gem);
               if (gem) {
                 return (
                   <div key={gem.place_id} className="relative mb-4">
