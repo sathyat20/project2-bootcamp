@@ -192,21 +192,21 @@ export default function CurrentTrip() {
   }
 
   useEffect(() => {
-    // // Listen to changes on the specific trip's data
-    // const tripRef = ref(database, `${DB_TRIPS_KEY}/${key}/addedGems`);
+    // Listen to changes on the specific trip's data
+    const tripRef = ref(database, `${DB_TRIPS_KEY}/${key}/addedGems`);
 
-    // const tripChanged = onValue(tripRef, (snapshot) => {
-    //   console.log("Database value changed", snapshot.val());
-    //   const updatedTripData = snapshot.val();
-    //   if (updatedTripData && updatedTripData.addedGems) {
-    //     setAddedGems(updatedTripData.addedGems);
-    //   }
-    // });
+    const tripChanged = onValue(tripRef, (snapshot) => {
+      console.log("Database value changed", snapshot.val());
+      const updatedTripData = snapshot.val();
+      if (updatedTripData && updatedTripData.addedGems) {
+        setAddedGems(updatedTripData.addedGems);
+      }
+    });
 
-    // return () => {
-    //   tripChanged();
-    // };
-    populateAddedGems()
+    return () => {
+      tripChanged();
+    };
+    // populateAddedGems()
   }, [addedGems]);
 
   const handleRemoveFromTrip = async (gemIdToRemove) => {
