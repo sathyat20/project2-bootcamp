@@ -173,7 +173,7 @@ const Login = (props) => {
             className="flex flex-col justify-between items-center content-center gap-4"
           >
             <p className=" text-sm">
-              Sign up to see photos and videos from your friends.
+              Sign up to start exploring hidden gems around Hong Kong.
             </p>
             <input
               type="text"
