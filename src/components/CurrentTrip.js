@@ -18,7 +18,6 @@ export default function CurrentTrip() {
   const {
     title,
     date,
-    isTripCreated,
     addedGems = [],
     setAddedGems,
     key,
@@ -125,9 +124,11 @@ export default function CurrentTrip() {
         return;
       }
 
+
       const newAddedGems = [...addedGems, gem.place_id];
       setAddedGems(newAddedGems)
       console.log("Added Gems after adding:", newAddedGems);
+
 
       const tripRef = ref(database, `${DB_TRIPS_KEY}/${key}/addedGems`);
         try {
@@ -142,10 +143,10 @@ export default function CurrentTrip() {
       }
 
   const populateAddedGems = () => {
-    console.log("hey",addedGems)
     return (
       <div className="card lg:card-side bg-base-100 shadow-xl max-w-md p-4">
-        {addedGems ? (
+        {addedGems.length > 0 ? (
+
           <div className="card-body">
             {addedGems.map((gemId) => {
               console.log(gemId);
@@ -236,22 +237,22 @@ export default function CurrentTrip() {
   return (
     <div className="p-4">
       <div className="mb-4">
-        {isTripCreated ? (
-          <div>
-            {title && <h1 className="mb-2">{title}</h1>}
-            {date ? (
-              <div>
-                <h1 className="mb-1">Start Date: {date.startDate}</h1>
-                <h1>End Date: {date.endDate}</h1>
-              </div>
-            ) : null}
-          </div>
-        ) : null}
-      </div>
+        <div>
+          {title && <h1 className="mb-2">{title}</h1>}
+          {date ? (
+            <div>
+              <h1 className="mb-1">Start Date: {date.startDate}</h1>
+              <h1>End Date: {date.endDate}</h1>
+            </div>
+          ) : null}
+        </div>
+       </div>
 
       <div className="top-card-container mb-4">
         {populateAddedGems()}
       </div>
+
+      <div className="top-card-container mb-4">{populateAddedGems()}</div>
 
       <div className="suggestions-container">
         <h2 className="mb-4">Suggestions</h2>
@@ -259,7 +260,9 @@ export default function CurrentTrip() {
           <div className="carousel-item space-x-4">
             {gems.map((gem, index) => (
               <div
-                className={`card card-compact w-96 bg-base-100 shadow-xl mb-4 ${addedGems.includes(gem.place_id) ? "gem-already-added" : ""}`}
+                className={`card card-compact w-96 bg-base-100 shadow-xl mb-4 ${
+                  addedGems.includes(gem.place_id) ? "gem-already-added" : ""
+                }`}
                 key={index}
               >
                 <figure className="mb-2">

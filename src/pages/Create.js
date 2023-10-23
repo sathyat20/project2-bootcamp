@@ -4,24 +4,28 @@ import Header from "../components/header.js";
 import Footer from "../components/footer.js";
 import NewTrip from "../components/NewTrip";
 import PastTrips from "../components/PastTrips";
-import CurrentTrip from "../components/CurrentTrip";
 import { TripContext } from "../Provider/TripProvider.js";
+import CurrentTrip from "../components/CurrentTrip";
 
 export default function Create() {
 
-  const [showCurrentTrip, setShowCurrentTrip] = useState(false);
   // const [showPastTrips, setShowPastTrips] = useState(false);
-  const { setDate, setTitle, showPastTrips, setShowPastTrips, showNewTrip, setShowNewTrip, activeButton, setActiveButton } = useContext(TripContext);
+  const { setDate, setTitle, showPastTrips, setShowPastTrips, 
+    showNewTrip, setShowNewTrip, activeButton, setActiveButton,
+  setShowCurrentTrip, showCurrentTrip, setIsTripCreated, setCurrentHiddenGemId } = useContext(TripContext);
 
   const handleButtonClick = (buttonId) => {
     setActiveButton(buttonId);
-    setShowNewTrip(false); // Hide NewTrip component
-    setShowCurrentTrip(false); // Hide CurrentTrip component
+    setShowNewTrip(true); // Hide NewTrip component
     setShowPastTrips(false); // Hide PastTrips component
+    setShowCurrentTrip(false); //Hide CurrenTrip component
 
     if (buttonId === 1) {
       // If the first button is clicked, show the NewTrip component
+      setCurrentHiddenGemId("")
+      setIsTripCreated(false)
       setShowNewTrip(true);
+      setShowCurrentTrip(false)
       setDate({
         startDate: "",
         endDate: "",
@@ -29,21 +33,13 @@ export default function Create() {
       setTitle("")
     }
 
-    if (buttonId === 2) {
-      // If the second button is clicked, show the CurrentTrip component
-      setShowCurrentTrip(true);
-    } // Toggle the state
-
     if (buttonId === 3) {
       // If the third button is clicked, show the PastTrips component
       setShowPastTrips(true);
+      setShowCurrentTrip(false)
+      setShowNewTrip(false)
     }
   };
-
-  const handleNewTripCreated = () => {
-    handleButtonClick(2)
-    console.log("Moved to current tab")
-  }
 
   return (
     <div className="App">
@@ -62,21 +58,15 @@ export default function Create() {
             New Trip
           </button>
           <button
-            className={activeButton === 2 ? "btn btn-active" : "btn"}
-            onClick={() => handleButtonClick(2)}
-          >
-            Current Trip
-          </button>
-          <button
             className={activeButton === 3 ? "btn btn-active" : "btn"}
             onClick={() => handleButtonClick(3)}
           >
             Past Trips
           </button>
         </div>
-        {showNewTrip && <NewTrip onNewTripCreated={handleNewTripCreated} />}
-        {showCurrentTrip && <CurrentTrip />}
-        {showPastTrips && <PastTrips onPastTripClick={handleNewTripCreated} />}
+        {showNewTrip && <NewTrip />}
+        {showPastTrips && <PastTrips />}
+        {showCurrentTrip && <CurrentTrip/>}
       </div>
       <Footer />
     </div>
