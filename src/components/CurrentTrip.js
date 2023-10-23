@@ -126,9 +126,9 @@ export default function CurrentTrip() {
       }
 
       const newAddedGems = [...addedGems, gem.place_id];
-      const newGems = gems.filter((item) => item.place_id !== gem.place_id)
+      //const newGems = gems.filter((item) => item.place_id !== gem.place_id)
       setAddedGems(newAddedGems)
-      setGems(newGems)
+      //setGems(newGems)
       console.log("Added Gems after adding:", newAddedGems);
 
       const tripRef = ref(database, `${DB_TRIPS_KEY}/${key}/addedGems`);
@@ -138,8 +138,8 @@ export default function CurrentTrip() {
 
         } catch (error) {
           console.error("Error updating addedGems in the database:", error);
-          setAddedGems(addedGems);
-          setGems([...gems, gem]);
+          // setAddedGems(addedGems);
+          // setGems([...gems, gem]);
         }
       }
 
@@ -150,7 +150,9 @@ export default function CurrentTrip() {
         {addedGems ? (
           <div className="card-body">
             {addedGems.map((gemId) => {
+              console.log(gemId);
               const gem = gems.find((g) => g.place_id === gemId);
+              console.log(gem);
               if (gem) {
                 return (
                   <div key={gem.place_id} className="relative mb-4">

@@ -15,7 +15,8 @@ export default function TripProvider({children}) {
   const [showPastTrips, setShowPastTrips] = useState(false);
   const [showNewTrip, setShowNewTrip] = useState(true);
   const [activeButton, setActiveButton] = useState(1);
-  const [addedGems, setAddedGems] = useState(undefined);
+  const [addedGems, setAddedGems] = useState([]);
+  // const [addedGems, setAddedGems] = useState(undefined);
   const [currentHiddenGemId, setCurrentHiddenGemId] = useState("")
   const [key, setKey] = useState("")
 

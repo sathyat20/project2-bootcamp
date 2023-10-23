@@ -419,7 +419,7 @@ function Map() {
             editorial_summary={hiddenGemObject.editorial_summary}
             formatted_address={hiddenGemObject.formatted_address}
             name={hiddenGemObject.name}
-            photos={hiddenGemObject.photos}
+            // photos={hiddenGemObject.photos}
             rating={hiddenGemObject.rating}
             types={hiddenGemObject.types}
             clearState={clearState}
@@ -427,6 +427,7 @@ function Map() {
             likes={hiddenGemSelfAddOnDataObject.likes}
             visits={hiddenGemSelfAddOnDataObject.visits}
             saves={hiddenGemSelfAddOnDataObject.saves}
+            photos={hiddenGemSelfAddOnDataObject.photos}
             //Handles series of action
             onCommentButtonClick={onCommentButtonClick}
             onButtonChange={onButtonChange}

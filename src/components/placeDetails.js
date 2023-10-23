@@ -99,6 +99,33 @@ const PlaceDetails = ({
     }
   };
 
+  const renderPhoto = () => {
+    if (photos) {
+      return photos.map((photo) => {
+        return (
+          <div 
+            className="carousel-item"
+            key={photo}
+          >
+            <button
+              name="photos"
+              className="rounded-box bg-slate-200 h-52"
+              onClick={() => {
+                // onNewTripsClick();
+              }}
+            >
+              <img
+              className="h-52"
+                src={photo}
+                alt="sitePhoto"
+              />
+            </button>
+          </div>
+        )
+      })
+    }
+  }
+
   // useEffect(() => {
   //   console.log(user);
   //   if (user) {
@@ -150,9 +177,15 @@ const PlaceDetails = ({
               )}
             </div>
             <div>
-              <h1>Photo</h1>
+              <h1>{" "}</h1>
             </div>
           </div>
+
+          {/* Carousell */}
+          <div className="carousel carousel-center max-w-md space-x-2 h-auto bg-white rounded-box">
+            {renderPhoto()}
+          </div>
+
           {/* Buttons Row */}
           <div className="flex justify-between text-center content-center">
 
@@ -274,7 +307,7 @@ const PlaceDetails = ({
                 }}
               >
                 <div className="flex flex-col p-4 justify-center text-left content-center">
-                  <p className="font-bold">View Created Trips</p>
+                  <p className="font-bold">Add to Created Trips</p>
                 </div>
               </button>
             </div>
