@@ -122,7 +122,10 @@ const Profile = (props) => {
             key={key}
             name={hiddenGem[key].name}
             overview={hiddenGem[key].editorial_summary ? hiddenGem[key].editorial_summary.overview : ""}
-            photoURL={""}
+            photoURL={hiddenGemSelfAddOnData[key].photos[0]}
+            lat={hiddenGem[key].geometry.location.lat}
+            lng={hiddenGem[key].geometry.location.lng}
+            place_id={key}
           />
         )
       })
@@ -137,7 +140,10 @@ const Profile = (props) => {
             key={key}
             name={hiddenGem[key].name}
             overview={hiddenGem[key].editorial_summary ? hiddenGem[key].editorial_summary.overview : ""}
-            photoURL={""}
+            photoURL={hiddenGemSelfAddOnData[key].photos[0]}
+            lat={hiddenGem[key].geometry.location.lat}
+            lng={hiddenGem[key].geometry.location.lng}
+            place_id={key}
           />
         )
       })

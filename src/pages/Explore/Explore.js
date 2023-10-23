@@ -48,7 +48,7 @@ export default function Explore() {
 function Map() {
   // User Object brought in via useContext();
   const { user } = useContext(UserContext);
-  const { districtDetails, setDistrictDetails } = useContext(CoordinatesContext);
+  const { districtDetails, setDistrictDetails, gemRedirectDetails, setGemRedirectDetails } = useContext(CoordinatesContext);
 
   // Places Data
   const [ hiddenGem, setHiddenGem ] = useState({});
@@ -367,6 +367,17 @@ function Map() {
           console.log("DistrictDetails validated and successfully set");
           setDistrictDetails({});
         }
+      } 
+
+      if (gemRedirectDetails !== undefined) {
+        console.log("Enter gemRedirectDetails logic");
+        if (Object.keys(gemRedirectDetails).length > 0) {
+          setCenter(gemRedirectDetails.coordinates);
+          setZoom(gemRedirectDetails.zoom);
+          setHiddenGemId(gemRedirectDetails.place_id);
+          console.log("GemRedirectDetails is successfull passed on");
+          setGemRedirectDetails({});
+        }
       }
     }
   }, [map])
@@ -419,7 +430,6 @@ function Map() {
             editorial_summary={hiddenGemObject.editorial_summary}
             formatted_address={hiddenGemObject.formatted_address}
             name={hiddenGemObject.name}
-            // photos={hiddenGemObject.photos}
             rating={hiddenGemObject.rating}
             types={hiddenGemObject.types}
             clearState={clearState}
